@@ -1,0 +1,23 @@
+{
+  "mizan": "0.1",
+  "label": "post_journal_entry",
+  "params": {"eid": "Int"},
+  "returns": "Money",
+  "effects": ["db.read"],
+  "nodes": {
+    "eid":     {"op": "param", "name": "eid"},
+    "zero_i":  {"op": "const", "type": "Int", "value": 0},
+    "res":     {"op": "result"},
+    "eid_ok":  {"op": "gt", "in": ["eid", "zero_i"]},
+    "lines":   {"op": "db.scan", "table": "journal_lines"},
+    "mine":    {"op": "filter_eq", "in": ["lines", "eid"], "field": "entry"},
+    "debits":  {"op": "pluck", "in": ["mine"], "field": "debit"},
+    "credits": {"op": "pluck", "in": ["mine"], "field": "credit"},
+    "t_debit": {"op": "sum", "in": ["debits"]},
+    "t_credit":{"op": "sum", "in": ["credits"]},
+    "balanced":{"op": "eq", "in": ["res", "t_credit"]}
+  },
+  "pre": ["eid_ok"],
+  "post": ["balanced"],
+  "out": "t_debit"
+}

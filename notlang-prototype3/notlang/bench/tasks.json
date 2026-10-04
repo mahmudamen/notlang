@@ -1,0 +1,58 @@
+[
+  {"id": "t01", "name": "partner_total", "returns": "Money", "needs": ["db.read"],
+   "prompt": "Write `partner_total(pid: Int) -> Money`: the sum of `amount` over invoices whose `partner` equals pid. Add a precondition pid > 0 and a postcondition result >= 0.",
+   "cases": [
+     {"args": {"pid": 1}, "expect": "150.00"},
+     {"args": {"pid": 2}, "expect": "75.00"},
+     {"args": {"pid": 99}, "expect": "0"},
+     {"args": {"pid": 0}, "error": "PRE_FAILED"}]},
+  {"id": "t02", "name": "invoice_count", "returns": "Int", "needs": ["db.read"],
+   "prompt": "Write `invoice_count(pid: Int) -> Int`: how many invoices belong to partner pid. No contracts.",
+   "cases": [
+     {"args": {"pid": 1}, "expect": 2},
+     {"args": {"pid": 2}, "expect": 1},
+     {"args": {"pid": 99}, "expect": 0}]},
+  {"id": "t03", "name": "entry_debit_total", "returns": "Money", "needs": ["db.read"],
+   "prompt": "Write `entry_debit_total(eid: Int) -> Money`: the sum of `debit` over journal_lines whose `entry` equals eid. Add a precondition eid > 0.",
+   "cases": [
+     {"args": {"eid": 1}, "expect": "100.00"},
+     {"args": {"eid": 2}, "expect": "50.00"},
+     {"args": {"eid": 0}, "error": "PRE_FAILED"}]},
+  {"id": "t04", "name": "entry_is_balanced", "returns": "Bool", "needs": ["db.read"],
+   "prompt": "Write `entry_is_balanced(eid: Int) -> Bool`: true when the total debit of entry eid equals its total credit. No contracts.",
+   "cases": [
+     {"args": {"eid": 1}, "expect": true},
+     {"args": {"eid": 2}, "expect": false}]},
+  {"id": "t05", "name": "net_balance", "returns": "Money", "needs": ["db.read"],
+   "prompt": "Write `net_balance(eid: Int) -> Money`: total debit minus total credit of journal entry eid. No contracts.",
+   "cases": [
+     {"args": {"eid": 1}, "expect": "0"},
+     {"args": {"eid": 2}, "expect": "10.00"}]},
+  {"id": "t06", "name": "stock_on_hand", "returns": "Int", "needs": ["db.read"],
+   "prompt": "Write `stock_on_hand(product: Int) -> Int`: the sum of `qty` over stock_moves for that product. Add a postcondition that stock can never be negative (result >= 0).",
+   "cases": [
+     {"args": {"product": 1}, "expect": 7},
+     {"args": {"product": 2}, "error": "POST_FAILED"},
+     {"args": {"product": 3}, "expect": 0}]},
+  {"id": "t07", "name": "over_limit", "returns": "Bool", "needs": ["db.read"],
+   "prompt": "Write `over_limit(pid: Int, limit: Money) -> Bool`: true when the partner's invoice total is strictly greater than limit. No contracts.",
+   "cases": [
+     {"args": {"pid": 1, "limit": "150.00"}, "expect": false},
+     {"args": {"pid": 1, "limit": "100"}, "expect": true},
+     {"args": {"pid": 3, "limit": "1000"}, "expect": true}]},
+  {"id": "t08", "name": "discounted_total", "returns": "Money", "needs": ["db.read"],
+   "prompt": "Write `discounted_total(pid: Int) -> Money`: the partner's invoice total, minus a flat 100 discount when that total is strictly greater than 1000. No contracts.",
+   "cases": [
+     {"args": {"pid": 3}, "expect": "1100.00"},
+     {"args": {"pid": 1}, "expect": "150.00"}]},
+  {"id": "t09", "name": "audited_total", "returns": "Money", "needs": ["db.read", "io.print"],
+   "prompt": "Write `audited_total(pid: Int) -> Money`: the partner's invoice total. It must also print that total (an io.print effect) and return it. No contracts.",
+   "cases": [
+     {"args": {"pid": 1}, "expect": "150.00"},
+     {"args": {"pid": 2}, "expect": "75.00"}]},
+  {"id": "t10", "name": "two_partner_total", "returns": "Money", "needs": ["db.read"],
+   "prompt": "Write `two_partner_total(a: Int, b: Int) -> Money`: invoice total of partner a plus invoice total of partner b. No contracts.",
+   "cases": [
+     {"args": {"a": 1, "b": 2}, "expect": "225.00"},
+     {"args": {"a": 1, "b": 1}, "expect": "300.00"}]}
+]

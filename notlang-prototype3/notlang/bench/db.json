@@ -1,0 +1,27 @@
+{
+  "schema": {
+    "invoices": {"id": "Int", "partner": "Int", "amount": "Money"},
+    "journal_lines": {"entry": "Int", "debit": "Money", "credit": "Money"},
+    "stock_moves": {"product": "Int", "qty": "Int"}
+  },
+  "tables": {
+    "invoices": [
+      {"id": 1, "partner": 1, "amount": "100.50"},
+      {"id": 2, "partner": 1, "amount": "49.50"},
+      {"id": 3, "partner": 2, "amount": "75.00"},
+      {"id": 4, "partner": 3, "amount": "1200.00"}
+    ],
+    "journal_lines": [
+      {"entry": 1, "debit": "100.00", "credit": "0"},
+      {"entry": 1, "debit": "0", "credit": "100.00"},
+      {"entry": 2, "debit": "50.00", "credit": "0"},
+      {"entry": 2, "debit": "0", "credit": "40.00"}
+    ],
+    "stock_moves": [
+      {"product": 1, "qty": 10},
+      {"product": 1, "qty": -3},
+      {"product": 2, "qty": 5},
+      {"product": 2, "qty": -8}
+    ]
+  }
+}

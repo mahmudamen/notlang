@@ -1,0 +1,22 @@
+{
+  "mizan": "0.1",
+  "label": "partner_total",
+  "params": {"pid": "Int"},
+  "returns": "Money",
+  "effects": ["db.read"],
+  "nodes": {
+    "pid":    {"op": "param", "name": "pid"},
+    "zero_i": {"op": "const", "type": "Int", "value": 0},
+    "zero_m": {"op": "const", "type": "Money", "value": "0"},
+    "res":    {"op": "result"},
+    "pid_ok": {"op": "gt", "in": ["pid", "zero_i"]},
+    "res_ok": {"op": "ge", "in": ["res", "zero_m"]},
+    "inv":    {"op": "db.scan", "table": "invoices"},
+    "mine":   {"op": "filter_eq", "in": ["inv", "pid"], "field": "partner"},
+    "amts":   {"op": "pluck", "in": ["mine"], "field": "amount"},
+    "total":  {"op": "sum", "in": ["amts"]}
+  },
+  "pre": ["pid_ok"],
+  "post": ["res_ok"],
+  "out": "total"
+}

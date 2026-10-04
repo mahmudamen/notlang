@@ -1,0 +1,18 @@
+{
+  "mizan": "0.1",
+  "label": "has_invoices",
+  "params": {"pid": "Int"},
+  "returns": "Bool",
+  "effects": ["db.read"],
+  "nodes": {
+    "pid":   {"op": "param", "name": "pid"},
+    "zero":  {"op": "const", "type": "Int", "value": 0},
+    "inv":   {"op": "db.scan", "table": "invoices"},
+    "mine":  {"op": "filter_eq", "in": ["inv", "pid"], "field": "partner"},
+    "n":     {"op": "len", "in": ["mine"]},
+    "any":   {"op": "gt", "in": ["n", "zero"]},
+    "pid_ok":{"op": "gt", "in": ["pid", "zero"]}
+  },
+  "pre": ["pid_ok"],
+  "out": "any"
+}
