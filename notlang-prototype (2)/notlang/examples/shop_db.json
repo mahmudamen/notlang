@@ -1,0 +1,40 @@
+{
+  "domain": {
+    "types": {
+      "ProductId": "Int",
+      "PartnerId": "Int",
+      "Qty": "Int",
+      "Amount": "Money"
+    },
+    "contexts": {
+      "inventory": ["stock_moves"],
+      "accounting": ["invoices", "journal_lines"]
+    },
+    "glossary": {
+      "ProductId": "Identifier of a sellable product.",
+      "PartnerId": "Identifier of a customer or a vendor.",
+      "Qty": "Signed number of units; a negative move takes stock out.",
+      "Amount": "Money in the company currency."
+    }
+  },
+  "schema": {
+    "stock_moves": {"product": "ProductId", "qty": "Qty"},
+    "invoices": {"id": "Int", "partner": "PartnerId", "amount": "Amount"},
+    "journal_lines": {"entry": "Int", "debit": "Amount", "credit": "Amount"}
+  },
+  "tables": {
+    "stock_moves": [
+      {"product": 1, "qty": 10},
+      {"product": 1, "qty": -3},
+      {"product": 2, "qty": 5}
+    ],
+    "invoices": [
+      {"id": 1, "partner": 1, "amount": "100.50"},
+      {"id": 2, "partner": 1, "amount": "49.50"}
+    ],
+    "journal_lines": [
+      {"entry": 1, "debit": "100.00", "credit": "0"},
+      {"entry": 1, "debit": "0", "credit": "100.00"}
+    ]
+  }
+}

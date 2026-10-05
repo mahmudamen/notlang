@@ -1,0 +1,42 @@
+{
+  "mizan": "0.2",
+  "label": "reserve_stock",
+  "context": "inventory",
+  "params": {"product": "ProductId", "wanted": "Qty"},
+  "returns": "Qty",
+  "effects": ["db.read"],
+  "raises": ["OutOfStock"],
+  "nodes": {
+    "product":   {"op": "param", "name": "product"},
+    "wanted":    {"op": "param", "name": "wanted"},
+    "none":      {"op": "const", "type": "Qty", "value": 0},
+    "result":    {"op": "result"},
+    "moves":     {"op": "db.scan", "table": "stock_moves"},
+    "mine":      {"op": "filter_eq", "in": ["moves", "product"], "field": "product"},
+    "qtys":      {"op": "pluck", "in": ["mine"], "field": "qty"},
+    "on_hand":   {"op": "sum", "in": ["qtys"]},
+    "enough":    {"op": "ge", "in": ["on_hand", "wanted"]},
+    "left":      {"op": "sub", "in": ["on_hand", "wanted"]},
+    "refuse":    {"op": "fail", "error": "OutOfStock", "type": "Qty",
+                  "message": "not enough stock for this reservation"},
+    "reserve":   {"op": "if", "in": ["enough", "left", "refuse"]},
+    "wanted_ok": {"op": "gt", "in": ["wanted", "none"]},
+    "never_neg": {"op": "ge", "in": ["result", "none"]}
+  },
+  "pre": ["wanted_ok"],
+  "post": ["never_neg"],
+  "out": "reserve",
+  "scenarios": [
+    {"title": "Reserve fewer units than on hand",
+     "when": {"product": 1, "wanted": 5}, "then": {"result": 2}},
+    {"title": "Reserve exactly what is on hand",
+     "when": {"product": 1, "wanted": 7}, "then": {"result": 0}},
+    {"title": "Refuse to over-reserve",
+     "when": {"product": 1, "wanted": 8}, "then": {"error": "OutOfStock"}},
+    {"title": "Zero units is a caller bug",
+     "when": {"product": 1, "wanted": 0}, "then": {"error": "PRE_FAILED"}},
+    {"title": "A product with no stock history is out of stock",
+     "given": {"stock_moves": []},
+     "when": {"product": 99, "wanted": 1}, "then": {"error": "OutOfStock"}}
+  ]
+}

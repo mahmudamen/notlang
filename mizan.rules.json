@@ -1,0 +1,19 @@
+{
+  "min_scenarios": 3,
+  "mutation_score_min": 0.8,
+  "require_contract_coverage": true,
+  "require_contract": true,
+  "max_nodes": 30,
+  "max_depth": 8,
+  "max_params": 3,
+  "min_duplicate_size": 3,
+  "no_dead_nodes": true,
+  "no_duplicate_subgraphs": true,
+  "no_unused_params": true,
+  "magic_consts_need_why": true,
+  "snake_case_names": true,
+  "require_label": true,
+  "require_context": true,
+  "require_glossary": true,
+  "forbidden_effect_mixes": [["db.read", "io.print"]]
+}

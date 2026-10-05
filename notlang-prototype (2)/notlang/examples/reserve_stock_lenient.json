@@ -1,0 +1,98 @@
+{
+  "mizan": "0.2",
+  "label": "reserve_stock_lenient",
+  "context": "inventory",
+  "params": {
+    "product": "ProductId",
+    "wanted": "Qty"
+  },
+  "returns": "Qty",
+  "effects": [
+    "db.read"
+  ],
+  "raises": [
+    "OutOfStock"
+  ],
+  "nodes": {
+    "product": {
+      "op": "param",
+      "name": "product"
+    },
+    "wanted": {
+      "op": "param",
+      "name": "wanted"
+    },
+    "none": {
+      "op": "const",
+      "type": "Qty",
+      "value": 0
+    },
+    "result": {
+      "op": "result"
+    },
+    "moves": {
+      "op": "db.scan",
+      "table": "stock_moves"
+    },
+    "mine": {
+      "op": "filter_eq",
+      "in": [
+        "moves",
+        "product"
+      ],
+      "field": "product"
+    },
+    "qtys": {
+      "op": "pluck",
+      "in": [
+        "mine"
+      ],
+      "field": "qty"
+    },
+    "on_hand": {
+      "op": "sum",
+      "in": [
+        "qtys"
+      ]
+    },
+    "enough": {
+      "op": "ge",
+      "in": [
+        "on_hand",
+        "wanted"
+      ]
+    },
+    "left": {
+      "op": "sub",
+      "in": [
+        "on_hand",
+        "wanted"
+      ]
+    },
+    "refuse": {
+      "op": "fail",
+      "error": "OutOfStock",
+      "type": "Qty",
+      "message": "not enough stock for this reservation"
+    },
+    "reserve": {
+      "op": "if",
+      "in": [
+        "enough",
+        "left",
+        "refuse"
+      ]
+    },
+    "never_neg": {
+      "op": "ge",
+      "in": [
+        "result",
+        "none"
+      ]
+    }
+  },
+  "post": [
+    "never_neg"
+  ],
+  "out": "reserve"
+}
